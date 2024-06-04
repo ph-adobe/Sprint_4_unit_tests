@@ -4,21 +4,11 @@ from main import BooksCollector
 
 
 class TestBooksCollector:
-
-    def test_books_genre_empty_dict(self):
+    def test_books_collector_init_data(self):
         collector = BooksCollector()
         assert collector.books_genre == {}
-
-    def test_favorites_empty_list(self):
-        collector = BooksCollector()
         assert collector.favorites == []
-
-    def test_genre_contains_all_genres(self):
-        collector = BooksCollector()
         assert collector.genre == ["Фантастика", "Ужасы", "Детективы", "Мультфильмы", "Комедии"]
-
-    def test_genre_age_rating_contains_horror_and_detective(self):
-        collector = BooksCollector()
         assert collector.genre_age_rating == ["Ужасы", "Детективы"]
 
     def test_add_new_book_add_two_books(self):
@@ -33,30 +23,52 @@ class TestBooksCollector:
         collector.add_new_book(book)
         assert collector.books_genre.get(book) == ""
 
-    def test_set_book_genre_when_it_was_empty(self):
+    def test_add_new_book_if_book_in_book_genre_not_added(self):
+        collector = BooksCollector()
+        collector.add_new_book("Гордость и предубеждение и зомби")
+        collector.add_new_book("Что делать, если ваш кот хочет вас убить")
+        collector.add_new_book("Гордость и предубеждение и зомби")
+        assert len(collector.books_genre) == 2
+
+    @pytest.mark.parametrize(
+        "book_name",
+        ["", "a"*41 ]
+    )
+    def test_add_new_book_book_name_length_validation_negative(self, book_name):
+        collector = BooksCollector()
+        collector.add_new_book(book_name)
+        assert len(collector.books_genre) == 0
+
+    @pytest.mark.parametrize(
+        "book_name",
+        ["a", "a"*40 ]
+    )
+    def test_add_new_book_book_name_length_validation_positive(self, book_name):
+        collector = BooksCollector()
+        collector.add_new_book(book_name)
+        assert len(collector.books_genre) == 1
+
+
+    @pytest.mark.parametrize(
+        "book_name, genre",
+        [
+            ["1984", "Фантастика"],
+            ["12 стульев", "Комедии"],
+            ["О новый дивный мир", "Фантастика"]
+        ]
+    )
+    def test_set_book_genre_when_it_was_empty_or_change_value_positive(self, book_name, genre):
         collector = BooksCollector()
         collector.books_genre = {
             "1984": "",
-            "12 стульев": "Комедии"
+            "12 стульев": "Ужасы",
+            "О новый дивный мир": "Фантастика",
         }
-        book = "1984"
-        genre = "Фантастика"
 
-        collector.set_book_genre(book, genre)
+        collector.set_book_genre(book_name, genre)
 
-        assert collector.books_genre.get(book) == genre
+        assert collector.books_genre.get(book_name) == genre
 
-    def test_set_book_genre_change_the_genre(self):
-        collector = BooksCollector()
-        collector.books_genre = {
-            "1984": "Комедии"
-        }
-        book = "1984"
-        genre_change = "Фантастика"
-
-        collector.set_book_genre(book, genre_change)
-
-        assert collector.books_genre.get(book) == genre_change
 
     def test_set_book_genre_if_book_not_in_collection_return_none(self):
         collector = BooksCollector()
@@ -170,4 +182,4 @@ class TestBooksCollector:
     def test_get_list_of_favorites_books_not_empty(self):
         collector = BooksCollector()
         collector.favorites = ["Шерлок Холмс", "Дюна"]
-        assert collector.get_list_of_favorites_books()
+        assert collector.get_list_of_favorites_books() == ["Шерлок Холмс", "Дюна"]
