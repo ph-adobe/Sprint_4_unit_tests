@@ -48,7 +48,6 @@ class TestBooksCollector:
         collector.add_new_book(book_name)
         assert len(collector.books_genre) == 1
 
-
     @pytest.mark.parametrize(
         "book_name, genre",
         [
@@ -68,7 +67,6 @@ class TestBooksCollector:
         collector.set_book_genre(book_name, genre)
 
         assert collector.books_genre.get(book_name) == genre
-
 
     def test_set_book_genre_if_book_not_in_collection_return_none(self):
         collector = BooksCollector()
@@ -93,6 +91,26 @@ class TestBooksCollector:
 
         collector.set_book_genre(book, genre_not_in_collection)
         assert collector.books_genre.get(book) == ""
+
+    def test_get_books_genre_not_empty_returns_collection(self):
+        collector = BooksCollector()
+
+        expected_collection = {
+            "Шерлок Холмс": "Детектив",
+            "12 стульев": "Комедии"
+        }
+
+        collector.books_genre = expected_collection
+
+        get_books_genre = collector.get_books_genre()
+
+        assert get_books_genre == expected_collection
+
+    def test_get_books_genre_empty_returns_empty_dict(self):
+        collector = BooksCollector()
+        get_books_genre = collector.get_books_genre()
+
+        assert get_books_genre == {}
 
     def test_get_book_genre_return_detective(self):
         collector = BooksCollector()
